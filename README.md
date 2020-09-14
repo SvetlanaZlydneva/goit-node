@@ -1,9 +1,9 @@
 # Скриншоты результата выполнения каждой команды:
 
-- [list](./img/list.jpg)
-- [add](./img/add.jpg)
-- [get](./img/get.jpg)
-- [remove](./img/remove.jpg)
+![list](./img/list.jpg)
+![add](./img/add.jpg)
+![get](./img/get.jpg)
+![remove](./img/remove.jpg)
 
 # Домашнее задание 1
 
