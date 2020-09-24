@@ -15,7 +15,7 @@ class ContactsController {
 
   async getContactById(req, res) {
     const { contactId } = req.params;
-    const contact = await getById(parseInt(contactId));
+    const contact = await getById(parseInt(contactId, 10));
     return contact
       ? res.status(200).send(contact)
       : res.status(404).send({ message: "Not found" });
@@ -28,18 +28,18 @@ class ContactsController {
 
   async deleteContact(req, res) {
     const { contactId } = req.params;
-    const contact = await getById(parseInt(contactId));
+    const contact = await getById(parseInt(contactId, 10));
     if (!contact) return res.status(404).send({ message: "Not found" });
-    await removeContact(parseInt(contactId));
+    await removeContact(parseInt(contactId, 10));
     return res.status(200).send({ message: "contact deleted" });
   }
 
   async updateContact(req, res) {
     const { contactId } = req.params;
-    const contact = await getById(parseInt(contactId));
+    const contact = await getById(parseInt(contactId, 10));
     if (!contact) return res.status(404).send({ message: "Not found" });
-    await updateContact(parseInt(contactId), req.body);
-    const updatedContact = await getById(parseInt(contactId));
+    await updateContact(parseInt(contactId, 10), req.body);
+    const updatedContact = await getById(parseInt(contactId, 10));
     return res.status(200).send(updatedContact);
   }
 
