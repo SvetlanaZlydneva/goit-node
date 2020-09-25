@@ -1,46 +1,67 @@
+const contactModel = require("./contacts.model");
 const {
-  listContacts,
-  getById,
-  removeContact,
-  addContact,
-  updateContact,
-} = require("../../contacts");
+  Types: { ObjectId },
+} = require("mongoose");
 const Joi = require("joi");
 
 class ContactsController {
-  async getContacts(_, res) {
-    const contacts = await listContacts();
-    return res.status(200).send(contacts);
+  async getContacts(_, res, next) {
+    try {
+      const contacts = await contactModel.find();
+      return res.status(200).json(contacts);
+    } catch (err) {
+      next(err);
+    }
   }
 
-  async getContactById(req, res) {
-    const { contactId } = req.params;
-    const contact = await getById(parseInt(contactId, 10));
-    return contact
-      ? res.status(200).send(contact)
-      : res.status(404).send({ message: "Not found" });
+  async getContactById(req, res, next) {
+    try {
+      const { contactId } = req.params;
+      const contact = await contactModel.findById(contactId);
+      if (!contact) return res.status(404).send({ message: "Not found" });
+      return res.status(200).json(contact);
+    } catch (err) {
+      next(err);
+    }
   }
 
-  async createContact(req, res) {
-    const contact = await addContact({ ...req.body });
-    return res.status(201).send(contact);
+  async createContact(req, res, next) {
+    try {
+      const contact = await contactModel.create(req.body);
+      return res.status(201).json(contact);
+    } catch (err) {
+      next(err);
+    }
   }
 
-  async deleteContact(req, res) {
-    const { contactId } = req.params;
-    const contact = await getById(parseInt(contactId, 10));
-    if (!contact) return res.status(404).send({ message: "Not found" });
-    await removeContact(parseInt(contactId, 10));
-    return res.status(200).send({ message: "contact deleted" });
+  async deleteContact(req, res, next) {
+    try {
+      const { contactId } = req.params;
+      const contact = await contactModel.findByIdAndDelete(contactId);
+      if (!contact) return res.status(404).send({ message: "Not found" });
+      return res.status(200).send({ message: "contact deleted" });
+    } catch (err) {
+      next();
+    }
   }
 
-  async updateContact(req, res) {
-    const { contactId } = req.params;
-    const contact = await getById(parseInt(contactId, 10));
-    if (!contact) return res.status(404).send({ message: "Not found" });
-    await updateContact(parseInt(contactId, 10), req.body);
-    const updatedContact = await getById(parseInt(contactId, 10));
-    return res.status(200).send(updatedContact);
+  async updateContact(req, res, next) {
+    try {
+      const { contactId } = req.params;
+      const contact = await contactModel.findByIdAndUpdate(
+        contactId,
+        {
+          $set: req.body,
+        },
+        {
+          new: true,
+        }
+      );
+      if (!contact) return res.status(404).send({ message: "Not found" });
+      return res.status(200).json(contact);
+    } catch (err) {
+      next();
+    }
   }
 
   validateCreateContact(req, res, next) {
@@ -68,6 +89,13 @@ class ContactsController {
     if (result.error) {
       return res.status(400).send({ message: "missing fields" });
     }
+    next();
+  }
+
+  validateId(req, res, next) {
+    const { contactId } = req.params;
+    if (!ObjectId.isValid(contactId))
+      return res.status(404).send({ message: "Not valid ID" });
     next();
   }
 }

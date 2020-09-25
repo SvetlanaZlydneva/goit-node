@@ -1,6 +1,10 @@
 const express = require("express");
+const mongoose = require("mongoose");
 require("dotenv").config();
 const PORT = process.env.PORT || 3000;
+const MONGODB_URL =
+  process.env.MONGODB_URL ||
+  "mongodb+srv://goit:parabolika@cluster0.vgifd.mongodb.net/db-contacts?retryWrites=true&w=majority";
 const morgan = require("morgan");
 const cors = require("cors");
 const contactsRouter = require("./contacts/contacts.router");
@@ -10,10 +14,11 @@ module.exports = class ContactsServer {
     this.server = null;
   }
 
-  start() {
+  async start() {
     this.initServer();
     this.initMiddlewares();
     this.initRoutes();
+    await this.initDataBase();
     this.startListening();
   }
 
@@ -29,6 +34,16 @@ module.exports = class ContactsServer {
 
   initRoutes() {
     this.server.use("/api/contacts", contactsRouter);
+  }
+
+  async initDataBase() {
+    try {
+      await mongoose.connect(MONGODB_URL);
+      console.log("Database connection successful");
+    } catch (err) {
+      console.log(err);
+      process.exit(1);
+    }
   }
 
   startListening() {
