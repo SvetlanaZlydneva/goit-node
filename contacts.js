@@ -7,7 +7,7 @@ async function listContacts() {
   return JSON.parse(contacts);
 }
 
-async function getContactById(contactId) {
+async function getById(contactId) {
   const contacts = await listContacts();
   return contacts.find((contact) => contact.id === contactId);
 }
@@ -21,17 +21,38 @@ async function removeContact(contactId) {
   return listContacts();
 }
 
-async function addContact(name, email, phone) {
+async function addContact({ name, email, phone }) {
   const contacts = await listContacts();
-  const newContact = { id: contacts.length + 1, name, email, phone };
+  const newContact = { id: getMaxId(contacts) + 1, name, email, phone };
   contacts.push(newContact);
   await fs.writeFile(contactsPath, JSON.stringify(contacts));
   return newContact;
 }
 
+async function updateContact(contactId, dataUpdate) {
+  const contacts = await listContacts();
+  const contactIndex = contacts.findIndex(
+    (contact) => contact.id === contactId
+  );
+  contacts[contactIndex] = {
+    ...contacts[contactIndex],
+    ...dataUpdate,
+  };
+  await fs.writeFile(contactsPath, JSON.stringify(contacts));
+  return;
+}
+
+function getMaxId(contacts) {
+  const { id } = contacts.reduce((acc, curr) =>
+    acc.id > curr.id ? acc : curr
+  );
+  return id;
+}
+
 module.exports = {
   listContacts,
-  getContactById,
+  getById,
   removeContact,
   addContact,
+  updateContact,
 };
