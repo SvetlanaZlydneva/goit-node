@@ -5,9 +5,17 @@ const {
 const Joi = require("joi");
 
 class ContactsController {
-  async getContacts(_, res, next) {
+  async getContacts(req, res, next) {
     try {
-      const contacts = await contactModel.find();
+      const options = {
+        page: req.query.page || 1,
+        limit: req.query.limit || 10,
+        lean: true,
+      };
+      const contacts = await contactModel.paginate(
+        contactModel.find(),
+        options
+      );
       return res.status(200).json(contacts);
     } catch (err) {
       next(err);
@@ -61,6 +69,19 @@ class ContactsController {
       return res.status(200).json(contact);
     } catch (err) {
       next();
+    }
+  }
+
+  async filteringContactsBySubscription(req, res, next) {
+    try {
+      const { sub } = req.params;
+      const allowedSubscriptionValues = ["free", "pro", "premium"];
+      if (!allowedSubscriptionValues.includes(sub))
+        return res.status(404).send({ message: "Not valid Subscription" });
+      const contacts = await contactModel.find({ subscription: sub });
+      return res.status(200).json(contacts);
+    } catch (err) {
+      next(err);
     }
   }
 
