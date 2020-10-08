@@ -7,6 +7,7 @@ const MONGODB_URL =
   "mongodb+srv://goit:parabolika@db-contacts.i4ehu.mongodb.net/db-contacts?retryWrites=true&w=majority";
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
 const contactsRouter = require("./contacts/contacts.router");
 const usersRouter = require("./users/users.router");
 const authRouter = require("./auth/auth.router");
@@ -32,6 +33,7 @@ module.exports = class ContactsServer {
     this.server.use(express.json());
     this.server.use(cors());
     this.server.use(morgan("tiny"));
+    this.server.use(express.static("public"));
   }
 
   initRoutes() {

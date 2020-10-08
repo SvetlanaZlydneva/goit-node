@@ -39,6 +39,26 @@ class UserController {
       next(err);
     }
   }
+
+  async updateAvatar(req, res, next) {
+    try {
+      const { _id } = req.user;
+      const { filename } = req.file;
+      const user = await userModel.findByIdAndUpdate(
+        _id,
+        {
+          avatarURL: `http://localhost:3000/images/${filename}`,
+        },
+        { new: true }
+      );
+      if (!user) return res.status(404).send({ message: "Not found" });
+      return res.status(200).json({
+        avatarURL: user.avatarURL,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = new UserController();

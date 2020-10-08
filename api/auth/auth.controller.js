@@ -4,6 +4,7 @@ const {
   comparePassword,
 } = require("../../services/hash.service");
 const { createToken } = require("../../services/token.service");
+const { avatarService } = require("../../services/avatargenerator.service");
 
 class AuthController {
   async createUser(req, res, next) {
@@ -14,10 +15,12 @@ class AuthController {
         email,
         password: await hashPassword(password),
         subscription,
+        avatarURL: await avatarService(),
       });
       return res.status(201).json({
         email: user.email,
         subscription: user.subscription,
+        avatarURL: user.avatarURL,
       });
     } catch (err) {
       next(err);
