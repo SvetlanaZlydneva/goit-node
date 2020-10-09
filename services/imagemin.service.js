@@ -3,11 +3,12 @@ const imageminJpegtran = require("imagemin-jpegtran");
 const imageminPngquant = require("imagemin-pngquant");
 const path = require("path");
 const { promises: fsPromises } = require("fs");
+const { minifiedDir, tmpDir } = require("../api/config");
 
 const imageMinService = async (req, res, next) => {
   try {
-    const MINIFIED_DIR = "public/images";
-    await imagemin(["tmp/" + req.file.filename], {
+    const MINIFIED_DIR = minifiedDir();
+    await imagemin([`${tmpDir}/${req.file.filename}`], {
       destination: MINIFIED_DIR,
       plugins: [
         imageminJpegtran(),

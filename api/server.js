@@ -1,13 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
-require("dotenv").config();
-const PORT = process.env.PORT || 3000;
-const MONGODB_URL =
-  process.env.MONGODB_URL ||
-  "mongodb+srv://goit:parabolika@db-contacts.i4ehu.mongodb.net/db-contacts?retryWrites=true&w=majority";
+const { db, port } = require("./config");
 const morgan = require("morgan");
 const cors = require("cors");
-const path = require("path");
 const contactsRouter = require("./contacts/contacts.router");
 const usersRouter = require("./users/users.router");
 const authRouter = require("./auth/auth.router");
@@ -44,7 +39,7 @@ module.exports = class ContactsServer {
 
   async initDataBase() {
     try {
-      await mongoose.connect(MONGODB_URL, {
+      await mongoose.connect(db, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       });
@@ -56,8 +51,8 @@ module.exports = class ContactsServer {
   }
 
   startListening() {
-    this.server.listen(PORT, () => {
-      console.log("Started listening on port", PORT);
+    this.server.listen(port, () => {
+      console.log("Started listening on port", port);
     });
   }
 };

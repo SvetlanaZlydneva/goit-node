@@ -1,4 +1,5 @@
 const userModel = require("./users.model");
+const { imageUrl } = require("../config");
 
 class UserController {
   async findUserByEmail(req, _, next) {
@@ -47,7 +48,7 @@ class UserController {
       const user = await userModel.findByIdAndUpdate(
         _id,
         {
-          avatarURL: `http://localhost:3000/images/${filename}`,
+          avatarURL: imageUrl(filename),
         },
         { new: true }
       );
