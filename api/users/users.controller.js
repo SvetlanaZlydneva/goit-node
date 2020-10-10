@@ -1,4 +1,5 @@
 const userModel = require("./users.model");
+const { imageUrl } = require("../config");
 
 class UserController {
   async findUserByEmail(req, _, next) {
@@ -34,6 +35,26 @@ class UserController {
       return res.status(200).json({
         email: user.email,
         subscription: user.subscription,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updateAvatar(req, res, next) {
+    try {
+      const { _id } = req.user;
+      const { filename } = req.file;
+      const user = await userModel.findByIdAndUpdate(
+        _id,
+        {
+          avatarURL: imageUrl(filename),
+        },
+        { new: true }
+      );
+      if (!user) return res.status(404).send({ message: "Not found" });
+      return res.status(200).json({
+        avatarURL: user.avatarURL,
       });
     } catch (err) {
       next(err);

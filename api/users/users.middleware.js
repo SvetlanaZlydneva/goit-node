@@ -17,7 +17,7 @@ class UserMiddleware {
       req.user = user;
       next();
     } catch (err) {
-      next(err);
+      res.status(401).send("Invalid token");
     }
   }
 
