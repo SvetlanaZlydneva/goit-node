@@ -7,6 +7,8 @@ const {
   MONGODB_URL,
   PUBLIC_DIRECTORY,
   TMP_DIRECTORY,
+  SENDGRID_API_KEY,
+  SENDER_EMAIL,
 } = process.env;
 
 const paths = {
@@ -19,6 +21,14 @@ const paths = {
   tmp: TMP_DIRECTORY || "tmp",
   images: IMAGE_DIRECTORY || "images",
   avatarGeneratorImg: "../node_modules/avatar-generator/img",
+};
+
+const mail = {
+  sendGrigApiKey:
+    SENDGRID_API_KEY ||
+    "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",
+  senderEmail: SENDER_EMAIL || "developer.zsa@gmail.com",
+  verifyLink: `${paths.host}:${paths.port}/api/auth/verify/`,
 };
 
 const imageUrl = (imgName) => {
@@ -46,4 +56,7 @@ module.exports = {
   minifiedDir,
   port: paths.port,
   db: paths.db,
+  emailApi: mail.sendGrigApiKey,
+  sender: mail.senderEmail,
+  link: mail.verifyLink,
 };
