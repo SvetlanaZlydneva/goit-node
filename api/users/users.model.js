@@ -11,12 +11,46 @@ const userSchema = new Schema({
     default: "free",
   },
   token: { type: String },
+  status: {
+    type: String,
+    require: true,
+    enum: ["Verified", "Created"],
+    default: "Created",
+  },
+  verificationToken: { type: String },
 });
 
 userSchema.static("updateToken", async function (id, newToken) {
   return this.findByIdAndUpdate(id, {
     token: newToken,
   });
+});
+
+userSchema.static("createVerificationToken", async function (id, token) {
+  return this.findByIdAndUpdate(
+    id,
+    {
+      verificationToken: token,
+    },
+    { new: true }
+  );
+});
+
+userSchema.static("findByVerificationToken", async function (
+  verificationToken
+) {
+  return this.findOne({ verificationToken });
+});
+
+userSchema.static("verifyUser", async function (id) {
+  return this.findByIdAndUpdate(
+    id,
+    {
+      status: "Verified",
+      verificationToken: null,
+    },
+    { new: true }
+  );
 });
 
 mongoose.set("useFindAndModify", false);
