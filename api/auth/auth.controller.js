@@ -83,7 +83,7 @@ class AuthController {
   async sendVerificationEmail(user) {
     const verificationToken = uuidv4();
     await userModel.createVerificationToken(user._id, verificationToken);
-    sendMail(user.email, verificationToken);
+    await sendMail(user.email, verificationToken);
   }
 }
 
